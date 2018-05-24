@@ -180,6 +180,26 @@ func (l *Logger) Trace(format string, a ...interface{}) {
 	fmt.Fprintf(l.traceWriter, " [%s] %s (trace): %s\n", now(), f, line)
 }
 
+// Panic if err not nil
+func (l *Logger) Fail(err error, format string, a ...interface{}) {
+	if err != nil {
+		f := FNameForLogger()
+		line := fmt.Sprintf(format, a...)
+		panicline := fmt.Sprintf(" [%s] %s (fatal): %s", now(), f, line)
+		fmt.Fprintln(l.fatalWriter, panicline)
+		panic(panicline)
+	}
+}
+
+// Report Error if err not nil
+func (l *Logger) Report(err error, format string, a ...interface{}) {
+	if err != nil {
+		f := FNameForLogger()
+		line := fmt.Sprintf(format, a...)
+		fmt.Fprintf(l.errorWriter, " [%s] %s (error): %s\n", now(), f, line)
+	}
+}
+
 // Return timestring in "15:04:05" format
 func now() string {
 	return time.Now().Format("15:04:05")
